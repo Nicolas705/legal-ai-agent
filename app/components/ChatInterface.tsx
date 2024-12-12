@@ -5,7 +5,7 @@ import { Button } from '@/app/components/ui/button';
 import { Card } from '@/app/components/ui/card';
 import { Input } from '@/app/components/ui/input';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { Send, User, Bot } from 'lucide-react';
+import { Send, User, Bot, Paperclip, X } from 'lucide-react';
 import { LoadingDots } from './ui/loading-dots';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
@@ -16,6 +16,11 @@ interface Message {
   content: string;
   id?: string;
   createdAt?: Date;
+  attachment?: {
+    name: string;
+    content: string;
+    type: string;
+  };
 }
 
 export function ChatInterface() {
@@ -24,6 +29,8 @@ export function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -31,17 +38,56 @@ export function ChatInterface() {
     }
   }, [messages]);
 
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    setSelectedFile(file);
+
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFilePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() && !selectedFile) return;
 
-    const userMessage: Message = { 
-      role: 'user', 
-      content: input,
-      createdAt: new Date()
+    let attachment;
+    if (selectedFile) {
+      const reader = new FileReader();
+      const content = await new Promise<string>((resolve) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(selectedFile);
+      });
+
+      attachment = {
+        name: selectedFile.name,
+        content,
+        type: selectedFile.type,
+      };
+    }
+
+    const userMessage: Message = {
+      role: 'user',
+      content: input || 'Uploaded a file: ' + selectedFile?.name,
+      createdAt: new Date(),
+      attachment,
     };
+
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setSelectedFile(null);
+    setFilePreview(null);
     setIsLoading(true);
 
     try {
@@ -87,7 +133,7 @@ export function ChatInterface() {
   };
 
   return (
-    <Card className="w-full h-full flex flex-col bg-gradient-to-br from-indigo-50/80 to-purple-50/80 dark:from-indigo-950 dark:to-purple-950 shadow-xl backdrop-blur-sm border-purple-100/20">
+    <Card className="w-full h-full flex flex-col bg-zinc-900 border-zinc-800/50 shadow-xl">
       <ScrollArea className="flex-1 p-4 overflow-y-auto">
         <div className="space-y-6">
           {messages.map((message, i) => (
@@ -122,33 +168,51 @@ export function ChatInterface() {
                 <div
                   className={`rounded-2xl px-4 py-2 shadow-sm ${
                     message.role === 'user'
-                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-br-none'
-                      : 'bg-white dark:bg-zinc-800/70 rounded-bl-none border border-purple-100/20 dark:border-purple-800/20'
+                      ? 'bg-blue-600 text-white rounded-br-none'
+                      : 'bg-zinc-800 rounded-bl-none border border-zinc-700'
                   }`}
                 >
                   <div className="prose dark:prose-invert max-w-none break-words">
                     {message.role === 'assistant' ? (
-                      <ReactMarkdown 
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          pre: ({ children }) => (
-                            <div className="overflow-auto w-full my-2 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100/20 dark:border-indigo-800/20">
-                              {children}
-                            </div>
-                          ),
-                          code: ({ node, inline, className, children, ...props }) => (
-                            inline ? 
-                              <code className="bg-indigo-100/50 dark:bg-indigo-900/30 rounded px-1" {...props}>
+                      <>
+                        {message.attachment && (
+                          <div className="mb-2">
+                            {message.attachment.type.startsWith('image/') ? (
+                              <img 
+                                src={message.attachment.content} 
+                                alt={message.attachment.name}
+                                className="max-w-[200px] rounded-lg"
+                              />
+                            ) : (
+                              <div className="flex items-center gap-2 text-sm text-zinc-400">
+                                <Paperclip className="w-4 h-4" />
+                                {message.attachment.name}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        <ReactMarkdown 
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            pre: ({ children }) => (
+                              <div className="overflow-auto w-full my-2 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100/20 dark:border-indigo-800/20">
                                 {children}
-                              </code> :
-                              <code className="block bg-indigo-100/50 dark:bg-indigo-900/30 p-2 rounded" {...props}>
-                                {children}
-                              </code>
-                          ),
-                        }}
-                      >
-                        {message.content}
-                      </ReactMarkdown>
+                              </div>
+                            ),
+                            code: ({ node, inline, className, children, ...props }) => (
+                              inline ? 
+                                <code className="bg-indigo-100/50 dark:bg-indigo-900/30 rounded px-1" {...props}>
+                                  {children}
+                                </code> :
+                                <code className="block bg-indigo-100/50 dark:bg-indigo-900/30 p-2 rounded" {...props}>
+                                  {children}
+                                </code>
+                            ),
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      </>
                     ) : (
                       message.content
                     )}
@@ -156,8 +220,8 @@ export function ChatInterface() {
                   <div
                     className={`text-xs mt-1 ${
                       message.role === 'user'
-                        ? 'text-white/70'
-                        : 'text-indigo-600/70 dark:text-indigo-300/70'
+                        ? 'text-blue-100/70'
+                        : 'text-zinc-400'
                     }`}
                   >
                     {formatTime(message.createdAt)}
@@ -187,24 +251,59 @@ export function ChatInterface() {
 
       <form
         onSubmit={handleSubmit}
-        className="p-4 border-t border-purple-100/20 dark:border-purple-800/20 flex gap-2 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm"
+        className="p-4 border-t border-zinc-800 flex flex-col gap-2 bg-zinc-900/50"
       >
-        <Input
-          ref={inputRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-          disabled={isLoading}
-          className="border-indigo-200 dark:border-indigo-800/30 focus:ring-2 focus:ring-indigo-500/20 bg-white/80 dark:bg-zinc-800/80"
-        />
-        <Button
-          type="submit"
-          size="icon"
-          disabled={isLoading}
-          className="shrink-0 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 transition-all duration-300"
-        >
-          <Send className="h-4 w-4" />
-        </Button>
+        {selectedFile && (
+          <div className="flex items-center gap-2 p-2 bg-zinc-800 rounded">
+            <Paperclip className="w-4 h-4 text-zinc-400" />
+            <span className="text-sm text-zinc-300">{selectedFile.name}</span>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedFile(null);
+                setFilePreview(null);
+              }}
+              className="ml-auto text-zinc-400 hover:text-zinc-200"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+        <div className="flex gap-2">
+          <Input
+            ref={inputRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type a message..."
+            disabled={isLoading}
+            className="border-zinc-700 focus:ring-2 focus:ring-blue-500/20 bg-zinc-800"
+          />
+          <input
+            type="file"
+            onChange={handleFileSelect}
+            className="hidden"
+            id="file-upload"
+            accept="image/*,.pdf,.doc,.docx,.txt"
+          />
+          <Button
+            type="button"
+            size="icon"
+            variant="outline"
+            onClick={() => document.getElementById('file-upload')?.click()}
+            className="shrink-0 border-zinc-700 hover:bg-zinc-800"
+            disabled={isLoading}
+          >
+            <Paperclip className="h-4 w-4" />
+          </Button>
+          <Button
+            type="submit"
+            size="icon"
+            disabled={isLoading}
+            className="shrink-0 bg-blue-600 hover:bg-blue-700 transition-colors"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
       </form>
     </Card>
   );
