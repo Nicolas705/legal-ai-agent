@@ -59,17 +59,47 @@ async function analyzePDF(base64PDF: string): Promise<string> {
 
 export async function POST(req: Request) {
   try {
-    const messages: ChatMessage[] = await req.json();
+    const body = await req.json();
+    
+    // Validate request body
+    if (!body || !body.messages || !Array.isArray(body.messages)) {
+      return NextResponse.json(
+        { error: 'Invalid request format. Expected {messages: [...]}' },
+        { status: 400 }
+      );
+    }
+
+    const messages = body.messages as ChatMessage[];
+    
+    // Validate message format
+    const isValidMessage = (msg: any): msg is ChatMessage => {
+      return typeof msg === 'object' && 
+             msg !== null &&
+             (msg.role === 'user' || msg.role === 'assistant') &&
+             typeof msg.content === 'string';
+    };
+
+    if (!messages.every(isValidMessage)) {
+      return NextResponse.json(
+        { error: 'Invalid message format in array' },
+        { status: 400 }
+      );
+    }
 
     // Check for PDF attachment in the latest message
     const lastMessage = messages[messages.length - 1];
     let pdfAnalysis = '';
     
-    if (lastMessage.attachment?.type === 'application/pdf') {
-      pdfAnalysis = await analyzePDF(lastMessage.attachment.content);
-      
-      // Modify the last message to include PDF content
-      lastMessage.content = `${lastMessage.content}\n\nPDF Content:\n${pdfAnalysis}`;
+    // Safely check for PDF attachment
+    if (lastMessage?.attachment?.type === 'application/pdf' && lastMessage.attachment.content) {
+      try {
+        pdfAnalysis = await analyzePDF(lastMessage.attachment.content);
+        // Modify the last message to include PDF content
+        lastMessage.content = `${lastMessage.content}\n\nPDF Content:\n${pdfAnalysis}`;
+      } catch (error) {
+        console.error('PDF processing error:', error);
+        // Continue without PDF analysis if it fails
+      }
     }
 
     // Convert messages to Groq format
