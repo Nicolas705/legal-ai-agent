@@ -1,5 +1,4 @@
 import { OpenAIEmbeddings } from '@langchain/openai';
-import { Document } from '@langchain/core/documents';
 
 export async function generateEmbeddings(texts: string[]) {
   const embeddings = new OpenAIEmbeddings({
