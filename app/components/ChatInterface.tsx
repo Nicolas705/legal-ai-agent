@@ -87,30 +87,43 @@ export function ChatInterface() {
   };
 
   return (
-    <Card className="w-full h-[600px] flex flex-col bg-white dark:bg-zinc-950 shadow-xl">
+    <Card className="w-full h-full flex flex-col bg-gradient-to-br from-indigo-50/80 to-purple-50/80 dark:from-indigo-950 dark:to-purple-950 shadow-xl backdrop-blur-sm border-purple-100/20">
       <ScrollArea className="flex-1 p-4 overflow-y-auto">
         <div className="space-y-6">
           {messages.map((message, i) => (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ 
+                duration: 0.4,
+                ease: [0.4, 0, 0.2, 1],
+                delay: i * 0.1 
+              }}
               key={i}
               className={`flex ${
                 message.role === 'user' ? 'justify-end' : 'justify-start'
               }`}
             >
-              <div className="flex items-end max-w-[80%] gap-2">
+              <motion.div 
+                className="flex items-end max-w-[80%] gap-2"
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.2 }}
+              >
                 {message.role === 'assistant' && (
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Bot className="w-4 h-4 text-primary" />
-                  </div>
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                    className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center"
+                  >
+                    <Bot className="w-4 h-4 text-indigo-600 dark:text-indigo-300" />
+                  </motion.div>
                 )}
                 <div
-                  className={`rounded-2xl px-4 py-2 ${
+                  className={`rounded-2xl px-4 py-2 shadow-sm ${
                     message.role === 'user'
-                      ? 'bg-primary text-primary-foreground rounded-br-none'
-                      : 'bg-gray-100 dark:bg-zinc-800 rounded-bl-none'
+                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-br-none'
+                      : 'bg-white dark:bg-zinc-800/70 rounded-bl-none border border-purple-100/20 dark:border-purple-800/20'
                   }`}
                 >
                   <div className="prose dark:prose-invert max-w-none break-words">
@@ -119,16 +132,16 @@ export function ChatInterface() {
                         remarkPlugins={[remarkGfm]}
                         components={{
                           pre: ({ children }) => (
-                            <div className="overflow-auto w-full my-2 bg-gray-100 dark:bg-zinc-800 rounded-lg">
+                            <div className="overflow-auto w-full my-2 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100/20 dark:border-indigo-800/20">
                               {children}
                             </div>
                           ),
                           code: ({ node, inline, className, children, ...props }) => (
                             inline ? 
-                              <code className="bg-gray-200 dark:bg-zinc-700 rounded px-1" {...props}>
+                              <code className="bg-indigo-100/50 dark:bg-indigo-900/30 rounded px-1" {...props}>
                                 {children}
                               </code> :
-                              <code className="block bg-gray-200 dark:bg-zinc-700 p-2 rounded" {...props}>
+                              <code className="block bg-indigo-100/50 dark:bg-indigo-900/30 p-2 rounded" {...props}>
                                 {children}
                               </code>
                           ),
@@ -143,29 +156,38 @@ export function ChatInterface() {
                   <div
                     className={`text-xs mt-1 ${
                       message.role === 'user'
-                        ? 'text-primary-foreground/70'
-                        : 'text-muted-foreground'
+                        ? 'text-white/70'
+                        : 'text-indigo-600/70 dark:text-indigo-300/70'
                     }`}
                   >
                     {formatTime(message.createdAt)}
                   </div>
                 </div>
                 {message.role === 'user' && (
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <User className="w-4 h-4 text-primary" />
-                  </div>
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                    className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center"
+                  >
+                    <User className="w-4 h-4 text-indigo-600 dark:text-indigo-300" />
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
             </motion.div>
           ))}
-          {isLoading && <LoadingDots />}
+          {isLoading && (
+            <div className="flex justify-center">
+              <LoadingDots className="text-indigo-600 dark:text-indigo-400" />
+            </div>
+          )}
           <div ref={scrollRef} />
         </div>
       </ScrollArea>
 
       <form
         onSubmit={handleSubmit}
-        className="p-4 border-t dark:border-zinc-800 flex gap-2 bg-gray-50/50 dark:bg-zinc-900/50"
+        className="p-4 border-t border-purple-100/20 dark:border-purple-800/20 flex gap-2 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm"
       >
         <Input
           ref={inputRef}
@@ -173,13 +195,13 @@ export function ChatInterface() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
           disabled={isLoading}
-          className="border-gray-200 dark:border-zinc-700 focus:ring-2 focus:ring-primary/20"
+          className="border-indigo-200 dark:border-indigo-800/30 focus:ring-2 focus:ring-indigo-500/20 bg-white/80 dark:bg-zinc-800/80"
         />
         <Button
           type="submit"
           size="icon"
           disabled={isLoading}
-          className="shrink-0"
+          className="shrink-0 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 transition-all duration-300"
         >
           <Send className="h-4 w-4" />
         </Button>
