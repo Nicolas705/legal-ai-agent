@@ -23,6 +23,18 @@ interface Message {
   };
 }
 
+interface QuickAction {
+  label: string;
+  message: string;
+}
+
+const quickActions: QuickAction[] = [
+  { label: "What can you do?", message: "What are your capabilities?" },
+  { label: "Code Review", message: "Can you help me review some code?" },
+  { label: "Debug Help", message: "Can you help me debug an issue?" },
+  { label: "Best Practices", message: "What are some coding best practices?" },
+];
+
 export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -132,10 +144,15 @@ export function ChatInterface() {
     }).format(date);
   };
 
+  const handleQuickAction = (message: string) => {
+    setInput(message);
+    inputRef.current?.focus();
+  };
+
   return (
-    <Card className="w-full h-full flex flex-col bg-zinc-900 border-zinc-800/50 shadow-xl">
+    <Card className="min-h-screen border-0 rounded-none bg-zinc-900 shadow-xl flex flex-col">
       <ScrollArea className="flex-1 p-4 overflow-y-auto">
-        <div className="space-y-6">
+        <div className="space-y-6 pb-4 max-w-4xl mx-auto">
           {messages.map((message, i) => (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -251,58 +268,78 @@ export function ChatInterface() {
 
       <form
         onSubmit={handleSubmit}
-        className="p-4 border-t border-zinc-800 flex flex-col gap-2 bg-zinc-900/50"
+        className="p-4 pb-6 border-t border-zinc-800 flex flex-col gap-2 bg-zinc-900/50"
       >
-        {selectedFile && (
-          <div className="flex items-center gap-2 p-2 bg-zinc-800 rounded">
-            <Paperclip className="w-4 h-4 text-zinc-400" />
-            <span className="text-sm text-zinc-300">{selectedFile.name}</span>
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedFile(null);
-                setFilePreview(null);
-              }}
-              className="ml-auto text-zinc-400 hover:text-zinc-200"
-            >
-              <X className="w-4 h-4" />
-            </button>
+        <div className="max-w-4xl mx-auto w-full">
+          {/* Quick Actions */}
+          <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
+            {quickActions.map((action, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                size="sm"
+                className="shrink-0 bg-zinc-800/50 border-zinc-700 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all duration-200"
+                onClick={() => handleQuickAction(action.message)}
+              >
+                {action.label}
+              </Button>
+            ))}
           </div>
-        )}
-        <div className="flex gap-2">
-          <Input
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message..."
-            disabled={isLoading}
-            className="border-zinc-700 focus:ring-2 focus:ring-blue-500/20 bg-zinc-800"
-          />
-          <input
-            type="file"
-            onChange={handleFileSelect}
-            className="hidden"
-            id="file-upload"
-            accept="image/*,.pdf,.doc,.docx,.txt"
-          />
-          <Button
-            type="button"
-            size="icon"
-            variant="outline"
-            onClick={() => document.getElementById('file-upload')?.click()}
-            className="shrink-0 border-zinc-700 hover:bg-zinc-800"
-            disabled={isLoading}
-          >
-            <Paperclip className="h-4 w-4" />
-          </Button>
-          <Button
-            type="submit"
-            size="icon"
-            disabled={isLoading}
-            className="shrink-0 bg-blue-600 hover:bg-blue-700 transition-colors"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+
+          {/* File Upload Preview */}
+          {selectedFile && (
+            <div className="flex items-center gap-2 p-2 bg-zinc-800 rounded mb-2">
+              <Paperclip className="w-4 h-4 text-zinc-400" />
+              <span className="text-sm text-zinc-300">{selectedFile.name}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedFile(null);
+                  setFilePreview(null);
+                }}
+                className="ml-auto text-zinc-400 hover:text-zinc-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* Input Area */}
+          <div className="flex gap-2 mb-2">
+            <Input
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type a message..."
+              disabled={isLoading}
+              className="border-zinc-700 focus:ring-2 focus:ring-blue-500/20 bg-zinc-800"
+            />
+            <input
+              type="file"
+              onChange={handleFileSelect}
+              className="hidden"
+              id="file-upload"
+              accept="image/*,.pdf,.doc,.docx,.txt"
+            />
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              onClick={() => document.getElementById('file-upload')?.click()}
+              className="shrink-0 border-zinc-700 hover:bg-zinc-800"
+              disabled={isLoading}
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
+            <Button
+              type="submit"
+              size="icon"
+              disabled={isLoading}
+              className="shrink-0 bg-blue-600 hover:bg-blue-700 transition-colors"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </form>
     </Card>
