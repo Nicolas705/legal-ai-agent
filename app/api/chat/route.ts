@@ -57,6 +57,26 @@ async function analyzePDF(base64PDF: string): Promise<string> {
   }
 }
 
+// First, let's define a proper type for message validation
+type MessageValidation = {
+  role: string;
+  content: string;
+  attachment?: {
+    name: string;
+    content: string;
+    type: string;
+  };
+};
+
+// Update the isValidMessage function
+const isValidMessage = (msg: unknown): msg is ChatMessage => {
+  const validation = msg as MessageValidation;
+  return typeof validation === 'object' && 
+         validation !== null &&
+         (validation.role === 'user' || validation.role === 'assistant') &&
+         typeof validation.content === 'string';
+};
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -72,13 +92,6 @@ export async function POST(req: Request) {
     const messages = body.messages as ChatMessage[];
     
     // Validate message format
-    const isValidMessage = (msg: any): msg is ChatMessage => {
-      return typeof msg === 'object' && 
-             msg !== null &&
-             (msg.role === 'user' || msg.role === 'assistant') &&
-             typeof msg.content === 'string';
-    };
-
     if (!messages.every(isValidMessage)) {
       return NextResponse.json(
         { error: 'Invalid message format in array' },

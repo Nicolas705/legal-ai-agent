@@ -1,5 +1,4 @@
 import { OpenAIEmbeddings } from '@langchain/openai';
-import { Document } from '@langchain/core/documents';
 import { kv } from '@vercel/kv';
 
 interface StoredDocument {
@@ -8,14 +7,14 @@ interface StoredDocument {
   metadata: {
     source: string;
     timestamp: string;
-    [key: string]: any;
+    [key: string]: string | number | boolean;
   };
 }
 
 export async function generateEmbeddings(
   texts: string[], 
   source: string = 'default',
-  additionalMetadata: Record<string, any> = {}
+  additionalMetadata: Record<string, string | number | boolean> = {}
 ) {
   const embeddings = new OpenAIEmbeddings({
     modelName: "text-embedding-3-small"
