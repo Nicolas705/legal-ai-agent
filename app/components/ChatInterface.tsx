@@ -24,18 +24,6 @@ interface Message {
   };
 }
 
-interface QuickAction {
-  label: string;
-  message: string;
-}
-
-const quickActions: QuickAction[] = [
-  { label: "Help & Features", message: "What are your capabilities?" },
-  { label: "Review Code", message: "Can you help me review some code?" },
-  { label: "Debug Help", message: "Can you help me debug an issue?" },
-  { label: "Best Practices", message: "What are some coding best practices?" },
-];
-
 export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -133,11 +121,6 @@ export function ChatInterface() {
       hour: 'numeric',
       minute: 'numeric',
     }).format(date);
-  };
-
-  const handleQuickAction = (message: string) => {
-    setInput(message);
-    inputRef.current?.focus();
   };
 
   return (
@@ -292,7 +275,7 @@ export function ChatInterface() {
               disabled={isLoading}
               className="border-zinc-700 focus:ring-2 focus:ring-blue-500/20 bg-zinc-800"
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !quickActions.some(qa => qa.message === input)) {
+                if (e.key === 'Enter') {
                   e.preventDefault();
                   handleSubmit(e);
                 }

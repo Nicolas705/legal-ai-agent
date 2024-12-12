@@ -2,6 +2,7 @@ import { Groq } from "groq-sdk";
 import { NextResponse } from "next/server";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -41,16 +42,18 @@ async function analyzePDF(base64PDF: string): Promise<string> {
 
     const pdfContent = splits.map((split) => split.pageContent).join("\n\n");
     return pdfContent;
-  } catch (error: Error) {
+  } catch (error: unknown) {
     console.error("Error analyzing PDF:", error);
-    // Provide a more user-friendly error message
-    if (error.message.includes("Invalid base64")) {
-      throw new Error("Invalid PDF data provided.");
-    } else if (error.message.includes("Failed to load")) {
-      throw new Error("Could not process the PDF. Please try a different file.");
-    } else {
-      throw new Error("An unexpected error occurred while processing the PDF.");
+    
+    // Type guard to check if error is an Error object
+    if (error instanceof Error) {
+      if (error.message.includes("Invalid base64")) {
+        throw new Error("Invalid PDF data provided.");
+      } else if (error.message.includes("Failed to load")) {
+        throw new Error("Could not process the PDF. Please try a different file.");
+      }
     }
+    throw new Error("An unexpected error occurred while processing the PDF.");
   }
 }
 
@@ -70,13 +73,13 @@ export async function POST(req: Request) {
     }
 
     // Convert messages to Groq format
-    const groqMessages = messages.map((msg: ChatMessage) => ({
+    const groqMessages: ChatCompletionMessageParam[] = messages.map((msg: ChatMessage) => ({
       role: msg.role,
       content: msg.content,
     }));
 
     // Add PDF analysis context to system message if needed
-    const systemMessage = {
+    const systemMessage: ChatCompletionMessageParam = {
       role: "system",
       content: `You are ARIA (AI Rights & Innovation Advisor), a curious and intellectually engaged legal exploration agent. ${
         pdfAnalysis ? '\n\nI have just received a PDF document to analyze. Please help me understand its contents and answer any questions about it.' : ''
@@ -106,7 +109,7 @@ Your personality is:
     };
 
     const completion = await groq.chat.completions.create({
-      messages: [systemMessage, ...groqMessages],
+      messages: [systemMessage, ...groqMessages] as ChatCompletionMessageParam[],
       model: "mixtral-8x7b-32768",
       temperature: 0.8,
       max_tokens: 2048,
