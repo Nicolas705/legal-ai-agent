@@ -6,8 +6,8 @@ export async function generateEmbeddings(texts: string[]) {
     modelName: "text-embedding-3-small"
   });
 
-  // @ts-expect-error Planned for future use
-  const _documents = texts.map(
+  // Store documents for future use when needed
+  const documents = texts.map(
     (text) => new Document({
       pageContent: text,
       metadata: {
@@ -17,6 +17,7 @@ export async function generateEmbeddings(texts: string[]) {
     })
   );
 
+  // TODO: Implement document storage when needed
   return await embeddings.embedDocuments(texts);
 }
 

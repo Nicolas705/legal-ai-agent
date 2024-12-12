@@ -41,7 +41,7 @@ async function analyzePDF(base64PDF: string): Promise<string> {
 
     const pdfContent = splits.map((split) => split.pageContent).join("\n\n");
     return pdfContent;
-  } catch (error: any) {
+  } catch (error: Error) {
     console.error("Error analyzing PDF:", error);
     // Provide a more user-friendly error message
     if (error.message.includes("Invalid base64")) {
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     }
 
     // Convert messages to Groq format
-    const groqMessages = messages.map((msg: any) => ({
+    const groqMessages = messages.map((msg: ChatMessage) => ({
       role: msg.role,
       content: msg.content,
     }));
