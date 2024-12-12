@@ -124,7 +124,7 @@ export function ChatInterface() {
   };
 
   return (
-    <Card className="min-h-screen border-0 rounded-none bg-zinc-900 shadow-xl flex flex-col">
+    <Card className="chat-interface min-h-screen border-0 rounded-none bg-zinc-900 shadow-xl flex flex-col">
       <ScrollArea className="flex-1 p-4 overflow-y-auto">
         <div className="space-y-6 pb-4 max-w-4xl mx-auto">
           {messages.map((message, i) => (
@@ -284,7 +284,7 @@ export function ChatInterface() {
             <input
               type="file"
               onChange={handleFileSelect}
-              className="hidden"
+              className="file-upload hidden"
               id="file-upload"
               accept="image/*,.pdf,.doc,.docx,.txt"
             />

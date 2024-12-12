@@ -1,60 +1,73 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from './ui/button';
-import { X } from 'lucide-react';
+import { Dialog, DialogContent } from "@/app/components/ui/dialog";
+import { motion, AnimatePresence } from "framer-motion";
+import { Cpu, MessageSquare, FileText } from "lucide-react";
 
-interface SpecsModalProps {
+export function SpecsModal({
+  isOpen,
+  onClose,
+}: {
   isOpen: boolean;
   onClose: () => void;
-}
-
-export function SpecsModal({ isOpen, onClose }: SpecsModalProps) {
+}) {
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50"
-            onClick={onClose}
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md"
-          >
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg shadow-lg p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-semibold text-white">System Specifications</h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full hover:bg-zinc-800"
-                  onClick={onClose}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800">
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="text-zinc-100 space-y-6"
+            >
+              <h2 className="text-2xl font-bold text-center mb-6 text-indigo-400">
+                System Specifications
+              </h2>
+              
+              <div className="space-y-4">
+                <motion.div
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800"
                 >
-                  <X className="h-4 w-4" />
-                </Button>
+                  <MessageSquare className="w-5 h-5 text-indigo-400" />
+                  <div>
+                    <h3 className="font-medium">Chat Model</h3>
+                    <p className="text-sm text-zinc-400">Mixtral 8x7B via Groq</p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800"
+                >
+                  <FileText className="w-5 h-5 text-indigo-400" />
+                  <div>
+                    <h3 className="font-medium">Embeddings Model</h3>
+                    <p className="text-sm text-zinc-400">OpenAI text-embedding-3-small</p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800"
+                >
+                  <Cpu className="w-5 h-5 text-indigo-400" />
+                  <div>
+                    <h3 className="font-medium">Processing</h3>
+                    <p className="text-sm text-zinc-400">Real-time inference</p>
+                  </div>
+                </motion.div>
               </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-zinc-200">
-                  <div className="w-24 text-zinc-400">Model</div>
-                  <div>Claude 3.5 Sonnet</div>
-                </div>
-                <div className="flex items-center gap-2 text-zinc-200">
-                  <div className="w-24 text-zinc-400">Speed</div>
-                  <div>Ultra Fast</div>
-                </div>
-                <div className="flex items-center gap-2 text-zinc-200">
-                  <div className="w-24 text-zinc-400">Memory</div>
-                  <div>Infinite</div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </DialogContent>
+    </Dialog>
   );
 } 
