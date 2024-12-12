@@ -6,6 +6,7 @@ export async function generateEmbeddings(texts: string[]) {
     modelName: "text-embedding-3-small"
   });
 
+  // @ts-expect-error Planned for future use
   const _documents = texts.map(
     (text) => new Document({
       pageContent: text,

@@ -30,8 +30,8 @@ interface QuickAction {
 }
 
 const quickActions: QuickAction[] = [
-  { label: "What can you do?", message: "What are your capabilities?" },
-  { label: "Code Review", message: "Can you help me review some code?" },
+  { label: "Help & Features", message: "What are your capabilities?" },
+  { label: "Review Code", message: "Can you help me review some code?" },
   { label: "Debug Help", message: "Can you help me debug an issue?" },
   { label: "Best Practices", message: "What are some coding best practices?" },
 ];
@@ -43,7 +43,6 @@ export function ChatInterface() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [filePreview, setFilePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -61,14 +60,6 @@ export function ChatInterface() {
     }
 
     setSelectedFile(file);
-
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFilePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,7 +91,6 @@ export function ChatInterface() {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setSelectedFile(null);
-    setFilePreview(null);
     setIsLoading(true);
 
     try {
@@ -219,7 +209,7 @@ export function ChatInterface() {
                                 {children}
                               </div>
                             ),
-                            code: ({ node, inline, className, children, ...props }) => (
+                            code: ({ inline, children, ...props }) => (
                               inline ? 
                                 <code className="bg-indigo-100/50 dark:bg-indigo-900/30 rounded px-1" {...props}>
                                   {children}
@@ -272,23 +262,9 @@ export function ChatInterface() {
       <form
         onSubmit={handleSubmit}
         className="p-4 pb-6 border-t border-zinc-800 flex flex-col gap-2 bg-zinc-900/50"
+        autoComplete="off"
       >
         <div className="max-w-4xl mx-auto w-full">
-          {/* Quick Actions */}
-          <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-            {quickActions.map((action, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                size="sm"
-                className="shrink-0 bg-zinc-800/50 border-zinc-700 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all duration-200"
-                onClick={() => handleQuickAction(action.message)}
-              >
-                {action.label}
-              </Button>
-            ))}
-          </div>
-
           {/* File Upload Preview */}
           {selectedFile && (
             <div className="flex items-center gap-2 p-2 bg-zinc-800 rounded mb-2">
@@ -298,7 +274,6 @@ export function ChatInterface() {
                 type="button"
                 onClick={() => {
                   setSelectedFile(null);
-                  setFilePreview(null);
                 }}
                 className="ml-auto text-zinc-400 hover:text-zinc-200"
               >
@@ -316,6 +291,12 @@ export function ChatInterface() {
               placeholder="Type a message..."
               disabled={isLoading}
               className="border-zinc-700 focus:ring-2 focus:ring-blue-500/20 bg-zinc-800"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !quickActions.some(qa => qa.message === input)) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
             />
             <input
               type="file"

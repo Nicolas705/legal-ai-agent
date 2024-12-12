@@ -7,6 +7,16 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  attachment?: {
+    name: string;
+    content: string;
+    type: string;
+  };
+}
+
 async function analyzePDF(base64PDF: string): Promise<string> {
   try {
     const base64Data = base64PDF.split(",")[1]; // Extract base64 data
@@ -46,7 +56,7 @@ async function analyzePDF(base64PDF: string): Promise<string> {
 
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
+    const messages: ChatMessage[] = await req.json();
 
     // Check for PDF attachment in the latest message
     const lastMessage = messages[messages.length - 1];
