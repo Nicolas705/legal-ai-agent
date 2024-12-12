@@ -10,6 +10,7 @@ import { LoadingDots } from './ui/loading-dots';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Image from 'next/image';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -195,9 +196,11 @@ export function ChatInterface() {
                         {message.attachment && (
                           <div className="mb-2">
                             {message.attachment.type.startsWith('image/') ? (
-                              <img 
+                              <Image 
                                 src={message.attachment.content} 
                                 alt={message.attachment.name}
+                                width={200}
+                                height={200}
                                 className="max-w-[200px] rounded-lg"
                               />
                             ) : (

@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from "framer-motion";
-import { MessageCircle } from "lucide-react";
 
 interface LoadingDotsProps {
   className?: string;

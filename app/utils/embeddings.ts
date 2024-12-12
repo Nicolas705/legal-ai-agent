@@ -6,7 +6,7 @@ export async function generateEmbeddings(texts: string[]) {
     modelName: "text-embedding-3-small"
   });
 
-  const documents = texts.map(
+  const _documents = texts.map(
     (text) => new Document({
       pageContent: text,
       metadata: {
