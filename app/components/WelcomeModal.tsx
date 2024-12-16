@@ -1,3 +1,4 @@
+import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 interface WelcomeStep {
   title: string;
   description: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   bullets: string[];
 }
 
