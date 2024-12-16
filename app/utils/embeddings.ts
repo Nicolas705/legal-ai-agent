@@ -29,17 +29,22 @@ export async function generateEmbeddings(
       content: text,
       embedding: embeddingVectors[index],
       metadata: {
-        source,
+        source: encodeURIComponent(source),
+        chunkIndex: index,
         timestamp: new Date().toISOString(),
         ...additionalMetadata
       }
     }));
 
-    // Store documents in KV store
-    // Using a compound key pattern: docs:{source}:{timestamp}
-    for (const doc of documents) {
-      const docKey = `docs:${doc.metadata.source}:${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      await kv.set(docKey, doc);
+    // Store documents in KV store with proper error handling
+    for (const [index, doc] of documents.entries()) {
+      try {
+        const docKey = `docs:${doc.metadata.source}:${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        await kv.set(docKey, doc);
+      } catch (error) {
+        console.error(`Failed to store document chunk ${index}:`, error);
+        throw error;
+      }
     }
 
     return embeddingVectors;
@@ -58,7 +63,15 @@ export async function generateQueryEmbedding(text: string) {
 }
 
 export async function getStoredDocuments(source?: string): Promise<StoredDocument[]> {
-  const pattern = source ? `docs:${source}:*` : 'docs:*';
+  let pattern;
+  if (source === 'default') {
+    pattern = 'docs:default/*';
+  } else if (source) {
+    pattern = `docs:${source}:*`;
+  } else {
+    pattern = 'docs:*';
+  }
+  
   const keys = await kv.keys(pattern);
   const documents = await Promise.all(keys.map(key => kv.get<StoredDocument>(key)));
   return documents.filter((doc): doc is StoredDocument => doc !== null);
