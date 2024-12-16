@@ -1,8 +1,7 @@
 import { Dialog, DialogContent } from "@/app/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
-import { Scale, CheckCircle, AlertCircle, Info, ChevronDown, BookOpen } from "lucide-react";
+import { CheckCircle, AlertCircle, Info, ChevronDown, BookOpen } from "lucide-react";
 import { useState } from "react";
-import { Button } from "./ui/button";
 import { Tooltip } from "@/app/components/ui/tooltip";
 
 interface Citation {
@@ -19,7 +18,6 @@ export function LegalModal({
   onClose: () => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [hoveredCitation, setHoveredCitation] = useState<number | null>(null);
   
   const citations: Citation[] = [
     {
@@ -158,7 +156,7 @@ export function LegalModal({
                         Building Axiom for the Law, Tech, and Culture class final project likely qualifies as fair use due to its educational and transformative nature. Fair use permits limited use of copyrighted material for purposes like teaching, research, and scholarship, especially in nonprofit educational contexts <CitationReference citation={citations[0]} /> <CitationReference citation={citations[1]} />.
                       </p>
                       <p className="text-zinc-300 text-sm leading-relaxed">
-                        The project's transformative purpose—creating new insights or tools rather than replicating the original work—strengthens its fair use argument, similar to precedents like Google Books <CitationReference citation={citations[2]} />. Nevertheless, current cases, such as the New York Times v. OpenAI, reveal how the law is actively negotiating the boundaries of fair use in light of generative AI. <CitationReference citation={citations[3]} />.
+                        The project&apos;s transformative purpose—creating new insights or tools rather than replicating the original work—strengthens its fair use argument, similar to precedents like Google Books <CitationReference citation={citations[2]} />. Nevertheless, current cases, such as the New York Times v. OpenAI, reveal how the law is actively negotiating the boundaries of fair use in light of generative AI. <CitationReference citation={citations[3]} />.
                       </p>
                       
                       <motion.div

@@ -27,6 +27,11 @@ export async function loadDefaultDocs(): Promise<{
   content: string;
   documents: DefaultDoc[];
 }> {
+  // Use the cached content if available
+  if (defaultDocsContent) {
+    return defaultDocsContent;
+  }
+
   try {
     const docsDir = path.join(process.cwd(), 'public', 'default-docs');
     
