@@ -31,7 +31,7 @@ export async function loadDefaultDocs(): Promise<string> {
       return "";
     }
 
-    let allContent: string[] = [];
+    const allContent: string[] = [];
 
     for (const pdfFile of pdfFiles) {
       const filePath = path.join(docsDir, pdfFile);

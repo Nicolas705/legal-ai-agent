@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Globe, MessageSquareCode, ArrowRight, Scale } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface WelcomeStep {
   title: string;

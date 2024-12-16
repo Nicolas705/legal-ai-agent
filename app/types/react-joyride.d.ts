@@ -15,7 +15,7 @@ declare module 'react-joyride' {
     continuous?: boolean;
     showProgress?: boolean;
     showSkipButton?: boolean;
-    callback?: (data: any) => void;
+    callback?: (data: Record<string, unknown>) => void;
     styles?: {
       options?: {
         primaryColor?: string;
