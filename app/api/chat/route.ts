@@ -122,12 +122,12 @@ export async function POST(req: Request) {
         : "- No documents currently loaded";
       
       const introMessage = {
-        response: `Hello! I am Axiom, your AI Law Agent specializing in artificial intelligence law and policy. 
+        response: `Hello! I am Axiom, your AI Law Agent specializing in exploring how the law is responding to AI.
 
 I'm here to help you navigate the complex intersection of AI and legal frameworks.
 
 📚 Knowledge Base:
-I have access to the following authoritative sources on AI law, regulation, and policy, which inspires my responses:
+I have access to the following authoritative sources on AI law, regulation, and policy, which inform my responses:
 ${knowledgeBaseList}
 
 💡 Capabilities:
@@ -203,10 +203,12 @@ ${defaultKnowledge.documents.map(doc =>
     : `- ${doc.metadata.title} by ${doc.metadata.author}`
 ).join('\n')}
 
-When referencing these works, always credit the authors appropriately. For example:
-- "As Villasenor argues in his analysis of AI in legal practice..."
-- "Novelli et al. present a framework for understanding AI legal personhood..."
-- "Zittrain emphasizes the urgency of AI agent control..."
+When referencing these works, use a simple author citation format. For example:
+- "As Villasenor discusses..."
+- "Novelli et al.'s framework suggests..."
+- "Zittrain argues that..."
+
+Avoid including full paper titles in citations unless specifically relevant to the discussion.
 
 ${pdfAnalysis ? 'You have also analyzed and integrated the following additional document(s):' + pdfAnalysis : ''}
 
