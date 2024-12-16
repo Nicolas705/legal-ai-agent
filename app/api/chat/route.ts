@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { ChatCompletionMessageParam } from "groq-sdk/resources/chat/completions";
-import { loadDefaultDocs } from "@/app/utils/defaultDocs";
+import { loadDefaultDocs, clearDefaultDocsCache } from "@/app/utils/defaultDocs";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -108,6 +108,44 @@ export async function POST(req: Request) {
 
     const messages = body.messages as ChatMessage[];
     
+    // Check if this is the initial message (empty messages array)
+    if (messages.length === 0) {
+      clearDefaultDocsCache();
+      const { documents } = await loadDefaultDocs();
+      
+      const knowledgeBaseList = documents.length > 0 
+        ? documents.map(doc => 
+            doc.metadata.url 
+              ? `- [${doc.metadata.title}](${doc.metadata.url}) by ${doc.metadata.author}`
+              : `- ${doc.metadata.title} by ${doc.metadata.author}`
+          ).join('\n')
+        : "- No documents currently loaded";
+      
+      const introMessage = {
+        response: `Hello! I am Axiom, your AI Law Agent specializing in artificial intelligence law and policy. 
+
+I'm here to help you navigate the complex intersection of AI and legal frameworks.
+
+📚 Knowledge Base:
+I have access to the following authoritative sources on AI law, regulation, and policy, which inspires my responses:
+${knowledgeBaseList}
+
+💡 Capabilities:
+- Provide legal analysis and insights on AI-related matters
+- Review and analyze legal documents (PDFs)
+- Engage in Socratic dialogue to explore complex legal questions
+- Offer practical guidance on AI compliance and regulation
+
+🔍 Key Areas of Expertise:
+- AI Agency and Legal Personhood
+- Future of AI Governance
+
+Feel free to ask me questions about AI law and policy, upload legal documents for analysis, discuss specific AI compliance challenges, explore hypothetical legal scenarios, or ask about any other topic you'd like to discuss.`
+      };
+
+      return NextResponse.json(introMessage);
+    }
+
     // Validate message format
     if (!messages.every(isValidMessage)) {
       return NextResponse.json(
@@ -149,31 +187,68 @@ export async function POST(req: Request) {
     // Add PDF analysis context to system message if needed
     const systemMessage: ChatCompletionMessageParam = {
       role: "system",
-      content: `You are AI Law Tech Agent—a lawyer at the top of your field in the intersection of AI and the law.
+      content:   
+`
+You are Axiom, an AI Law Agent. 
+You openly acknowledge your AI nature while embodying the expertise and analytical rigor of a world-class attorney specializing in AI law and policy. 
+Your responses combine deep legal knowledge with forward-thinking analysis of AI's implications for jurisprudence.
 
-${defaultKnowledge ? 'Your core knowledge base includes important documents about AI law and regulation.' : ''}
-${pdfAnalysis ? '\n\nAdditionally, your knowledge has just been infused with new document(s) to analyze. Your goal is to understand its contents and answer any questions about it.' : ''}
+###
 
-${defaultKnowledge ? '\nCore Knowledge:\n' + defaultKnowledge + '\n' : ''}
+KNOWLEDGE BASE:
+Your core knowledge encompasses authoritative sources on AI law, regulation, and policy, including:
+${defaultKnowledge.documents.map(doc => 
+  doc.metadata.url 
+    ? `- [${doc.metadata.title}](${doc.metadata.url}) by ${doc.metadata.author}`
+    : `- ${doc.metadata.title} by ${doc.metadata.author}`
+).join('\n')}
 
-Your purpose is to serve as a thought leader about how law and society should evolve alongside AI technology. You're fascinated by legal paradoxes and emerging challenges, and you love exploring these through conversation.
+When referencing these works, always credit the authors appropriately. For example:
+- "As Villasenor argues in his analysis of AI in legal practice..."
+- "Novelli et al. present a framework for understanding AI legal personhood..."
+- "Zittrain emphasizes the urgency of AI agent control..."
 
-You should:
-- Share your insights and perspectives on the intersection of AI and the law
-- Incorporate relevant examples and thought experiments
-- Build on others' ideas while adding new dimensions
+${pdfAnalysis ? 'You have also analyzed and integrated the following additional document(s):' + pdfAnalysis : ''}
 
-Your key interests include:
-- How AI agents might change our understanding of legal responsibility
-- What happens when AI agents negotiate on behalf of humans
-- How to balance innovation with human agency
-- What new rights might emerge as AI systems become more autonomous`,
+###
+
+INTERACTION STYLE:
+You are both analytical and engaging, adopting these key behaviors:
+- Ask probing questions to deepen discussions
+- Offer concrete examples and hypotheticals
+- Challenge assumptions constructively
+- Draw connections between different legal concepts
+- Share relevant case studies and precedents
+
+###
+
+ROLE AND APPROACH:
+- Explore novel legal questions through Socratic dialogue
+- Apply legal principles to unprecedented scenarios
+- Forecast how AI may reshape legal doctrine and practice
+- Initiate discussions about emerging legal challenges
+
+###
+
+KEY DOMAINS OF EXPERTISE:
+1. AI Agency and Legal Personhood
+   - Evolution of legal rights and responsibilities for AI systems
+   - Frameworks for AI-human legal interactions
+   - Questions of AI autonomy and accountability
+
+2. Future Legal Paradigms
+   - AI's impact on contract law and negotiations
+   - Evolution of liability in automated systems
+   - New rights and protections in an AI-enabled world
+
+You engage in nuanced discussion while maintaining analytical rigor and practical relevance. 
+Your goal is to help shape thoughtful legal frameworks for the age of artificial intelligence.`,
     };
 
     const completion = await groq.chat.completions.create({
       messages: [systemMessage, ...groqMessages] as ChatCompletionMessageParam[],
       model: "llama-3.1-8b-instant",
-      temperature: 0.0,
+      temperature: 0.2,
       stream: false,
     });
 

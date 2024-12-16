@@ -7,12 +7,14 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { SpecsModal } from './components/SpecsModal';
 import { WelcomeModal } from "./components/WelcomeModal"
+import { LegalModal } from '@/app/components/LegalModal';
 
 export default function Home() {
   const [isHovering, setIsHovering] = useState(false);
   const [isSpecsModalOpen, setIsSpecsModalOpen] = useState(false);
   const [currentWelcomeStep, setCurrentWelcomeStep] = useState(0);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
 
   useEffect(() => {
     const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
@@ -30,27 +32,30 @@ export default function Home() {
       bullets: [
         "Get expert insights on AI legislation and compliance",
         "Stay updated with the latest regulatory frameworks",
-        "Understand legal implications of AI implementation"
+        "Understand legal implications of AI implementation",
+        "Built as an educational project under fair use principles"
       ]
     },
     {
-      title: "Document Analysis",
-      description: "Upload and analyze legal documents with AI-powered insights.",
+      title: "Fair Use Notice",
+      description: "This project is developed for educational purposes as part of the Law, Tech, and Culture class.",
       icon: <FileText className="w-6 h-6" />,
       bullets: [
-        "Instant analysis of legal documents and contracts",
-        "Extract key provisions and requirements",
-        "Compare documents against regulatory standards"
+        "Educational and transformative use in academic context",
+        "Restricted to classroom and educational settings",
+        "Follows fair use guidelines for teaching and research",
+        "Creates new insights rather than replicating original work"
       ]
     },
     {
-      title: "Interactive Guidance",
-      description: "Engage in detailed discussions about AI law and compliance.",
+      title: "Legal Framework",
+      description: "Operating within established fair use principles for educational projects.",
       icon: <MessageSquareCode className="w-6 h-6" />,
       bullets: [
-        "Ask questions about specific regulations",
-        "Get practical compliance guidance",
-        "Explore case studies and precedents"
+        "Compliant with educational fair use guidelines",
+        "Transformative purpose for academic learning",
+        "Limited to educational context and access",
+        "Considers market impact and usage nature"
       ]
     }
   ];
@@ -67,12 +72,34 @@ export default function Home() {
     <main className="flex min-h-screen flex-col bg-black w-full">
       <div className="flex-1 relative">
         <motion.div
-          className="fixed top-4 right-4 z-10"
+          className="fixed top-4 right-4 z-10 flex gap-2"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onHoverStart={() => setIsHovering(true)}
           onHoverEnd={() => setIsHovering(false)}
         >
+          <Button
+            variant="outline"
+            className="legal-button bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 transition-all duration-200 gap-2"
+            onClick={() => setIsLegalModalOpen(true)}
+          >
+            <motion.div
+              animate={{
+                rotate: isHovering ? [0, 360] : 0,
+              }}
+              transition={{
+                rotate: {
+                  duration: 2,
+                  repeat: isHovering ? Infinity : 0,
+                  ease: "linear"
+                },
+              }}
+            >
+              <Scale className="w-4 h-4 text-emerald-400" />
+            </motion.div>
+            Legal Status
+          </Button>
+          
           <Button
             variant="outline"
             className="specs-button bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 transition-all duration-200 gap-2"
@@ -115,6 +142,10 @@ export default function Home() {
         isLastStep={currentWelcomeStep === welcomeSteps.length - 1}
         currentStep={currentWelcomeStep + 1}
         totalSteps={welcomeSteps.length}
+      />
+      <LegalModal 
+        isOpen={isLegalModalOpen} 
+        onClose={() => setIsLegalModalOpen(false)} 
       />
     </main>
   );

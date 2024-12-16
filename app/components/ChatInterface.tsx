@@ -6,7 +6,7 @@ import { Card } from '@/app/components/ui/card';
 import { Input } from '@/app/components/ui/input';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
 import { Send, User, Bot, Paperclip, X } from 'lucide-react';
-import { LoadingDots } from './ui/loading-dots';
+import { LoadingAnimation } from './ui/loading-animation';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -31,6 +31,35 @@ export function ChatInterface() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    const getInitialMessage = async () => {
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: [] }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch initial message');
+        }
+
+        const data = await response.json();
+        setMessages([{
+          role: 'assistant',
+          content: data.response,
+          createdAt: new Date()
+        }]);
+      } catch (error) {
+        console.error('Error fetching initial message:', error);
+      }
+    };
+
+    if (messages.length === 0) {
+      getInitialMessage();
+    }
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -234,9 +263,25 @@ export function ChatInterface() {
             </motion.div>
           ))}
           {isLoading && (
-            <div className="flex justify-center">
-              <LoadingDots className="text-indigo-600 dark:text-indigo-400" />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-start"
+            >
+              <div className="flex items-end gap-2">
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center"
+                >
+                  <Bot className="w-4 h-4 text-indigo-600 dark:text-indigo-300" />
+                </motion.div>
+                <div className="rounded-2xl px-4 py-2 shadow-sm bg-zinc-800 rounded-bl-none border border-zinc-700">
+                  <LoadingAnimation />
+                </div>
+              </div>
+            </motion.div>
           )}
           <div ref={scrollRef} />
         </div>
