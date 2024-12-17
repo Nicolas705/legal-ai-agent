@@ -2,7 +2,7 @@
 
 import { ChatInterface } from '@/app/components/ChatInterface';
 import { Button } from '@/app/components/ui/button';
-import { Cpu, Scale, FileText, BookOpen, Brain, Sparkles, Atom } from 'lucide-react';
+import { Cpu, Scale, FileText, BookOpen, Atom } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { SpecsModal } from './components/SpecsModal';
