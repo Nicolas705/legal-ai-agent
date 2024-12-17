@@ -8,7 +8,7 @@ interface WelcomeStep {
   title: string;
   description: string;
   icon: React.ReactNode;
-  bullets: string[];
+  bullets: (string | React.ReactNode)[];
 }
 
 interface WelcomeModalProps {
@@ -74,16 +74,18 @@ export function WelcomeModal({
               transition={{ delay: 0.2 }}
             >
               {step.bullets.map((bullet, index) => (
-                <motion.div
+                <motion.li
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  className="flex items-start space-x-2"
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center gap-2"
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-2" />
-                  <span className="text-zinc-300">{bullet}</span>
-                </motion.div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                  <span className="text-sm text-zinc-300">
+                    {typeof bullet === 'string' ? bullet : bullet}
+                  </span>
+                </motion.li>
               ))}
             </motion.div>
 

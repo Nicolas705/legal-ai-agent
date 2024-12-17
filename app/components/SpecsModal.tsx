@@ -34,7 +34,7 @@ export function SpecsModal({
                   <MessageSquare className="w-5 h-5 text-indigo-400" />
                   <div>
                     <h3 className="font-medium">Chat Model</h3>
-                    <p className="text-sm text-zinc-400">Mixtral 8x7B via Groq</p>
+                    <p className="text-sm text-zinc-400">Meta's LLAMA-3.1-8b-instant hosted on Groq</p>
                   </div>
                 </motion.div>
 

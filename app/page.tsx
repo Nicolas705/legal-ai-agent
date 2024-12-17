@@ -2,7 +2,7 @@
 
 import { ChatInterface } from '@/app/components/ChatInterface';
 import { Button } from '@/app/components/ui/button';
-import { Cpu, Scale, FileText } from 'lucide-react';
+import { Cpu, Scale, FileText, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { SpecsModal } from './components/SpecsModal';
@@ -33,7 +33,40 @@ export default function Home() {
         "Access authoritative sources on AI law and policy",
         "Analyze legal documents and provide insights",
         "Explore complex legal questions through Socratic dialogue",
-        "Get practical guidance on AI compliance"
+      ]
+    },
+    {
+      title: "Knowledge Base",
+      description: "Access our curated collection of open-source authoritative sources on AI law and policy. Click any article to read the full text.",
+      icon: <BookOpen className="w-6 h-6" />,
+      bullets: [
+        <a 
+          key="villasenor"
+          href="https://scholarship.law.umn.edu/cgi/viewcontent.cgi?article=1563&context=mjlst"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
+        >
+          AI as Legal Persons by John Villasenor
+        </a>,
+        <a
+          key="novelli"
+          href="https://philarchive.org/archive/NOVAAL"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
+        >
+          Generative AI and the Practice of Law by Novelli et al.
+        </a>,
+        <a
+          key="sag"
+          href="https://ir.lawnet.fordham.edu/cgi/viewcontent.cgi?article=6078&context=flr"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
+        >
+          Fairness and Fair Use in Generative AI by Matthew Sag
+        </a>
       ]
     },
     {
@@ -44,7 +77,6 @@ export default function Home() {
         "Educational and transformative use in academic context",
         "Built on authoritative legal sources and scholarship",
         "Designed for learning and research purposes",
-        "Creates new insights through interactive analysis"
       ]
     }
   ];
@@ -57,6 +89,11 @@ export default function Home() {
     }
   };
 
+  const handleWelcomeClick = () => {
+    setCurrentWelcomeStep(0); // Reset to first step
+    setShowWelcome(true);
+  };
+
   return (
     <main className="flex min-h-screen flex-col bg-black w-full">
       <div className="flex-1 relative">
@@ -67,6 +104,28 @@ export default function Home() {
           onHoverStart={() => setIsHovering(true)}
           onHoverEnd={() => setIsHovering(false)}
         >
+          <Button
+            variant="outline"
+            className="welcome-button bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 transition-all duration-200 gap-2"
+            onClick={handleWelcomeClick}
+          >
+            <motion.div
+              animate={{
+                rotate: isHovering ? [0, 360] : 0,
+              }}
+              transition={{
+                rotate: {
+                  duration: 2,
+                  repeat: isHovering ? Infinity : 0,
+                  ease: "linear"
+                },
+              }}
+            >
+              <Scale className="w-4 h-4 text-emerald-400" />
+            </motion.div>
+            Welcome
+          </Button>
+
           <Button
             variant="outline"
             className="legal-button bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 transition-all duration-200 gap-2"
@@ -117,6 +176,7 @@ export default function Home() {
             Specs
           </Button>
         </motion.div>
+
         <ChatInterface />
       </div>
       <SpecsModal 
