@@ -42,6 +42,17 @@ export function LegalModal({
     }
   ];
 
+  const welcomeContent = {
+    title: "Welcome to Axiom, your AI Law Agent",
+    description: "Your intelligent assistant for exploring how law is responding to AI and helping you navigate the complex intersection of AI and legal frameworks.",
+    capabilities: [
+      "Access authoritative sources on AI law and policy",
+      "Analyze legal documents and provide insights",
+      "Explore complex legal questions through Socratic dialogue",
+      "Get practical guidance on AI compliance"
+    ]
+  };
+
   const CitationReference = ({ citation }: { citation: Citation }) => (
     <a
       href={citation.url}
@@ -123,7 +134,7 @@ export function LegalModal({
                     whileTap={{ scale: 0.98 }}
                   >
                     <BookOpen className="w-4 h-4" />
-                    <span>Read More</span>
+                    <span>About Axiom</span>
                     <motion.div
                       animate={{ rotate: isExpanded ? 180 : 0 }}
                       transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
@@ -152,12 +163,21 @@ export function LegalModal({
                       transition={{ delay: 0.2 }}
                       className="prose prose-sm prose-invert max-w-none p-4 rounded-lg bg-zinc-900/50 border border-zinc-800 space-y-4"
                     >
+                      <h3 className="text-lg font-medium text-emerald-400">{welcomeContent.title}</h3>
                       <p className="text-zinc-300 text-sm leading-relaxed">
-                        Building Axiom for the Law, Tech, and Culture class final project likely qualifies as fair use due to its educational and transformative nature. Fair use permits limited use of copyrighted material for purposes like teaching, research, and scholarship, especially in nonprofit educational contexts <CitationReference citation={citations[0]} /> <CitationReference citation={citations[1]} />.
+                        {welcomeContent.description}
                       </p>
-                      <p className="text-zinc-300 text-sm leading-relaxed">
-                        The project&apos;s transformative purpose—creating new insights or tools rather than replicating the original work—strengthens its fair use argument, similar to precedents like Google Books <CitationReference citation={citations[2]} />. Nevertheless, current cases, such as the New York Times v. OpenAI, reveal how the law is actively negotiating the boundaries of fair use in light of generative AI. <CitationReference citation={citations[3]} />.
-                      </p>
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium text-emerald-400">Capabilities:</h4>
+                        <ul className="space-y-1">
+                          {welcomeContent.capabilities.map((capability, index) => (
+                            <li key={index} className="text-sm text-zinc-300 flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                              {capability}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                       
                       <motion.div
                         initial={{ opacity: 0 }}

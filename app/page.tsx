@@ -26,14 +26,14 @@ export default function Home() {
 
   const welcomeSteps = [
     {
-      title: "Welcome to AI Law Assistant",
-      description: "Your intelligent companion for navigating the evolving landscape of AI law and regulation.",
+      title: "Welcome to Axiom, your AI Law Agent",
+      description: "Your intelligent assistant for exploring how law is responding to AI and helping you navigate the complex intersection of AI and legal frameworks.",
       icon: <Scale className="w-6 h-6" />,
       bullets: [
-        "Get expert insights on AI legislation and compliance",
-        "Stay updated with the latest regulatory frameworks",
-        "Understand legal implications of AI implementation",
-        "Built as an educational project under fair use principles"
+        "Access authoritative sources on AI law and policy",
+        "Analyze legal documents and provide insights",
+        "Explore complex legal questions through Socratic dialogue",
+        "Get practical guidance on AI compliance"
       ]
     },
     {
@@ -42,20 +42,9 @@ export default function Home() {
       icon: <FileText className="w-6 h-6" />,
       bullets: [
         "Educational and transformative use in academic context",
-        "Restricted to classroom and educational settings",
-        "Follows fair use guidelines for teaching and research",
-        "Creates new insights rather than replicating original work"
-      ]
-    },
-    {
-      title: "Legal Framework",
-      description: "Operating within established fair use principles for educational projects.",
-      icon: <MessageSquareCode className="w-6 h-6" />,
-      bullets: [
-        "Compliant with educational fair use guidelines",
-        "Transformative purpose for academic learning",
-        "Limited to educational context and access",
-        "Considers market impact and usage nature"
+        "Built on authoritative legal sources and scholarship",
+        "Designed for learning and research purposes",
+        "Creates new insights through interactive analysis"
       ]
     }
   ];

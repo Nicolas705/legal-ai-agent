@@ -206,7 +206,7 @@ ${defaultKnowledge.documents.map(doc =>
 When referencing these works, use a simple author citation format. For example:
 - "As Villasenor discusses..."
 - "Novelli et al.'s framework suggests..."
-- "Zittrain argues that..."
+- "Sag argues that..."
 
 Avoid including full paper titles in citations unless specifically relevant to the discussion.
 
