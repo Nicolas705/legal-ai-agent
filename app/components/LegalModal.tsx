@@ -10,6 +10,19 @@ interface Citation {
   title: string;
 }
 
+const CitationReference = ({ citation }: { citation: Citation }) => (
+  <Tooltip content={citation.title}>
+    <a
+      href={citation.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300"
+    >
+      <span>[{citation.id}]</span>
+    </a>
+  </Tooltip>
+);
+
 export function LegalModal({
   isOpen,
   onClose,
@@ -49,13 +62,12 @@ export function LegalModal({
       "Access authoritative sources on AI law and policy",
       "Analyze legal documents and provide insights",
       "Explore complex legal questions through Socratic dialogue",
-      "Get practical guidance on AI compliance"
     ]
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800">
+      <DialogContent className="sm:max-w-[600px] md:max-w-[700px] bg-zinc-950 border-zinc-800">
         <DialogTitle className="sr-only">Legal Status</DialogTitle>
         <AnimatePresence>
           {isOpen && (
@@ -122,7 +134,7 @@ export function LegalModal({
                     whileTap={{ scale: 0.98 }}
                   >
                     <BookOpen className="w-4 h-4" />
-                    <span>About Axiom</span>
+                    <span>Read More</span>
                     <motion.div
                       animate={{ rotate: isExpanded ? 180 : 0 }}
                       transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
@@ -166,7 +178,15 @@ export function LegalModal({
                           ))}
                         </ul>
                       </div>
+
+                      <p className="text-zinc-300 text-sm leading-relaxed">
+                        Building Axiom for the Law, Tech, and Culture class final project likely qualifies as fair use due to its educational and transformative nature. Fair use permits limited use of copyrighted material for purposes like teaching, research, and scholarship, especially in nonprofit educational contexts <CitationReference citation={citations[0]} /> <CitationReference citation={citations[1]} />.
+                      </p>
                       
+                      <p className="text-zinc-300 text-sm leading-relaxed">
+                        The project&apos;s transformative purpose—creating new insights or tools rather than replicating the original work—strengthens its fair use argument, similar to precedents like Google Books <CitationReference citation={citations[2]} />. Nevertheless, current cases, such as the New York Times v. OpenAI, reveal how the law is actively negotiating the boundaries of fair use in light of generative AI. <CitationReference citation={citations[3]} />.
+                      </p>
+
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -176,16 +196,7 @@ export function LegalModal({
                         <h4 className="text-sm font-medium text-emerald-400 mb-2">References</h4>
                         <div className="space-y-2">
                           {citations.map((citation) => (
-                            <Tooltip key={citation.id} content={citation.title}>
-                              <a
-                                href={citation.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block text-xs text-zinc-400 hover:text-emerald-300 transition-colors"
-                              >
-                                [{citation.id}] {citation.title}
-                              </a>
-                            </Tooltip>
+                            <CitationReference key={citation.id} citation={citation} />
                           ))}
                         </div>
                       </motion.div>

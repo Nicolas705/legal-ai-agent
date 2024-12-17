@@ -2,7 +2,7 @@
 
 import { ChatInterface } from '@/app/components/ChatInterface';
 import { Button } from '@/app/components/ui/button';
-import { Cpu, Scale, FileText, BookOpen } from 'lucide-react';
+import { Cpu, Scale, FileText, BookOpen, Brain, Sparkles, Atom } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { SpecsModal } from './components/SpecsModal';
@@ -94,8 +94,33 @@ export default function Home() {
     setShowWelcome(true);
   };
 
+  const floatingAnimation = {
+    y: [0, -3, 0],
+    transition: {
+      duration: 3,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col bg-black w-full">
+      <motion.div 
+        className="fixed top-6 left-6 z-10 flex items-center gap-3"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+      >
+        <motion.div
+          animate={floatingAnimation}
+          whileHover={{ scale: 1.1 }}
+          transition={{ scale: { type: "spring", stiffness: 400 } }}
+        >
+          <Atom className="w-5 h-5 text-emerald-400" />
+        </motion.div>
+        <span className="text-xl font-bold tracking-widest text-white">AXIOM</span>
+      </motion.div>
+
       <div className="flex-1 relative">
         <motion.div
           className="fixed top-4 right-4 z-10 flex gap-2"
