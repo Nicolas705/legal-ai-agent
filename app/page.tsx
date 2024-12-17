@@ -27,7 +27,7 @@ export default function Home() {
   const welcomeSteps = [
     {
       title: "Welcome to Axiom, your AI Law Agent",
-      description: "Your intelligent assistant for exploring how law is responding to AI and helping you navigate the complex intersection of AI and legal frameworks.",
+      description: "Your intelligent assistant for exploring how law is responding to AI.",
       icon: <Scale className="w-6 h-6" />,
       bullets: [
         "Access authoritative sources on AI law and policy",

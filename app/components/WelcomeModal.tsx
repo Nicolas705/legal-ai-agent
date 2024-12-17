@@ -39,6 +39,7 @@ export function WelcomeModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] bg-zinc-900 text-white border-zinc-800">
+        <DialogTitle className="sr-only">Welcome to Axiom</DialogTitle>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}

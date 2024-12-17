@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/app/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/app/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, AlertCircle, Info, ChevronDown, BookOpen } from "lucide-react";
 import { useState } from "react";
@@ -56,6 +56,7 @@ export function LegalModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800">
+        <DialogTitle className="sr-only">Legal Status</DialogTitle>
         <AnimatePresence>
           {isOpen && (
             <motion.div

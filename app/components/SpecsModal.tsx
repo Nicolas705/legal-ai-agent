@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/app/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/app/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cpu, MessageSquare, FileText } from "lucide-react";
 
@@ -12,6 +12,7 @@ export function SpecsModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800">
+        <DialogTitle className="sr-only">System Specifications</DialogTitle>
         <AnimatePresence>
           {isOpen && (
             <motion.div

@@ -5,9 +5,9 @@ import { Button } from '@/app/components/ui/button';
 import { Card } from '@/app/components/ui/card';
 import { Input } from '@/app/components/ui/input';
 import { ScrollArea } from '@/app/components/ui/scroll-area';
-import { Send, User, Bot, Paperclip, X } from 'lucide-react';
+import { Send, User, Bot, Paperclip, X, MessageCircle, Sparkles, Scale, Book, Shuffle } from 'lucide-react';
 import { LoadingAnimation } from './ui/loading-animation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
@@ -24,6 +24,216 @@ interface Message {
   };
 }
 
+interface PresetQuestion {
+  id: string;
+  text: string;
+  icon: React.ReactNode;
+}
+
+const presetQuestions: PresetQuestion[] = [
+  {
+    id: 'legal-personhood',
+    text: "What are the challenges in granting legal personhood to AI?",
+    icon: <Scale className="w-4 h-4" />
+  },
+  {
+    id: 'contract-law',
+    text: "How is AI reshaping traditional contract law principles?",
+    icon: <Book className="w-4 h-4" />
+  },
+  {
+    id: 'liability',
+    text: "What frameworks exist for AI liability and accountability?",
+    icon: <MessageCircle className="w-4 h-4" />
+  }
+];
+
+const randomQuestions: PresetQuestion[] = [
+  // AI Agency and Legal Personhood
+  {
+    id: 'agency-1',
+    text: "How do we define legal consciousness for AI entities?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'agency-2',
+    text: "What rights should autonomous AI systems have under law?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'agency-3',
+    text: "Can AI be held criminally liable for its actions?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'agency-4',
+    text: "How should we handle AI representation in legal proceedings?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'agency-5',
+    text: "What constitutes 'intent' for AI systems in legal contexts?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'agency-6',
+    text: "How do fiduciary duties apply to AI agents?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'agency-7',
+    text: "Should AI have standing to sue in courts?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+
+  // AI and Contract Law
+  {
+    id: 'contract-1',
+    text: "Can AI systems legally form binding contracts?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'contract-2',
+    text: "How do smart contracts change traditional contract law?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'contract-3',
+    text: "What constitutes breach of contract by an AI system?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'contract-4',
+    text: "How should AI-negotiated contracts be enforced?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'contract-5',
+    text: "What are the implications of AI contract analysis tools?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+
+  // AI and Intellectual Property
+  {
+    id: 'ip-1',
+    text: "Who owns AI-generated intellectual property?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'ip-2',
+    text: "How should we handle AI training data copyright issues?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'ip-3',
+    text: "Can AI-generated works be patented?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'ip-4',
+    text: "What constitutes fair use for AI training?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'ip-5',
+    text: "How should trademark law adapt to AI-generated brands?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+
+  // AI Liability and Accountability
+  {
+    id: 'liability-1',
+    text: "Who's liable when AI systems cause harm?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'liability-2',
+    text: "How should AI malpractice be defined and handled?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'liability-3',
+    text: "What insurance frameworks are needed for AI systems?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'liability-4',
+    text: "How do we attribute causation in AI-related incidents?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+
+  // AI Privacy and Data Protection
+  {
+    id: 'privacy-1',
+    text: "How should AI systems handle personal data rights?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'privacy-2',
+    text: "What constitutes informed consent for AI data processing?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'privacy-3',
+    text: "How do privacy laws apply to AI training data?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+
+  // AI Regulation and Compliance
+  {
+    id: 'reg-1',
+    text: "What regulatory frameworks best govern AI development?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'reg-2',
+    text: "How should AI systems be certified for legal compliance?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'reg-3',
+    text: "What transparency requirements should apply to AI?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+
+  // AI in Legal Practice
+  {
+    id: 'practice-1',
+    text: "How is AI transforming legal research and discovery?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'practice-2',
+    text: "What ethical rules should govern AI in law practice?",
+    icon: <Sparkles className="w-4 h-4" />
+  },
+  {
+    id: 'practice-3',
+    text: "How should courts handle AI-generated legal arguments?",
+    icon: <Sparkles className="w-4 h-4" />
+  }
+];
+
+const AnimatedTooltip = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+      transition={{ duration: 0.1 }}
+      className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-2 bg-zinc-800 
+        rounded-lg border border-zinc-700 text-zinc-300 text-sm whitespace-nowrap
+        shadow-lg pointer-events-none"
+    >
+      {children}
+      <motion.div
+        className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-800 
+          border-b border-r border-zinc-700 rotate-45"
+      />
+    </motion.div>
+  );
+};
+
 export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -31,6 +241,10 @@ export function ChatInterface() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [randomQuestion, setRandomQuestion] = useState<PresetQuestion>(
+    randomQuestions[Math.floor(Math.random() * randomQuestions.length)]
+  );
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const getInitialMessage = async () => {
@@ -150,6 +364,56 @@ export function ChatInterface() {
       hour: 'numeric',
       minute: 'numeric',
     }).format(date);
+  };
+
+  const handlePresetQuestion = (question: string) => {
+    setInput(question);
+    inputRef.current?.focus();
+
+    const userMessage: Message = {
+      role: 'user',
+      content: question,
+      createdAt: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        messages: [...messages, userMessage],
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: data.response,
+        createdAt: new Date()
+      }]);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'Sorry, there was an error processing your request.' 
+      }]);
+    })
+    .finally(() => {
+      setIsLoading(false);
+      setInput('');
+    });
+  };
+
+  const generateRandomQuestion = () => {
+    const newQuestion = randomQuestions[Math.floor(Math.random() * randomQuestions.length)];
+    setRandomQuestion(newQuestion);
+    handlePresetQuestion(newQuestion.text);
   };
 
   return (
@@ -287,9 +551,60 @@ export function ChatInterface() {
         </div>
       </ScrollArea>
 
+      <motion.div 
+        className="px-4 py-2 border-t border-zinc-800 bg-zinc-900/50"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="max-w-4xl mx-auto flex flex-wrap gap-2">
+          {presetQuestions.map((q) => (
+            <motion.button
+              key={q.id}
+              onClick={() => handlePresetQuestion(q.text)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-sm text-zinc-300 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <motion.span
+                initial={{ rotate: 0 }}
+                whileHover={{ rotate: 15 }}
+                className="text-indigo-400"
+              >
+                {q.icon}
+              </motion.span>
+              {q.text}
+            </motion.button>
+          ))}
+          
+          <motion.button
+            onClick={generateRandomQuestion}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-600/20 
+              hover:bg-indigo-600/30 border border-indigo-500/30 text-sm text-indigo-300 
+              transition-colors relative"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <span className="text-indigo-400">
+              <Shuffle className="w-4 h-4" />
+            </span>
+            <span>{randomQuestion.text}</span>
+            <AnimatePresence>
+              {showTooltip && (
+                <AnimatedTooltip>
+                  Generate random question
+                </AnimatedTooltip>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
+      </motion.div>
+
       <form
         onSubmit={handleSubmit}
-        className="p-4 pb-6 border-t border-zinc-800 flex flex-col gap-2 bg-zinc-900/50"
+        className="p-4 border-t border-zinc-800 flex flex-col gap-2 bg-zinc-900/50"
         autoComplete="off"
       >
         <div className="max-w-4xl mx-auto w-full">
