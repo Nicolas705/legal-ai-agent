@@ -53,19 +53,6 @@ export function LegalModal({
     ]
   };
 
-  const CitationReference = ({ citation }: { citation: Citation }) => (
-    <a
-      href={citation.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300"
-    >
-      <Tooltip content={citation.title}>
-        <span>[{citation.id}]</span>
-      </Tooltip>
-    </a>
-  );
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800">
